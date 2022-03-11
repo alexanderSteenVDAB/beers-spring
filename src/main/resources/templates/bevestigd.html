@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="nl" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments::head(title='Mandje bevestigd')"></head>
+<body>
+<nav th:replace="fragments::menu"></nav>
+<h1 th:text="|Je winkelwagentje is bevestigd als bestelbon ${bestelBonId}|"></h1>
+<h2 th:if="${nietBestaandeBieren}" th:text="|De bieren met als naam: ${nietBestaandeBieren} bestaan niet meer|"></h2>
+
+</body>
+</html>

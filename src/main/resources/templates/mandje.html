@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="nl" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments::head(title='Mandje')"></head>
+<body>
+<nav th:replace="fragments::menu"></nav>
+<h1>Mandje</h1>
+<table th:if="not ${bestelbonLijnen.isEmpty()}">
+    <thead>
+    <tr>
+        <th>Bier</th>
+        <th>Prijs</th>
+        <th>Aantal</th>
+        <th>Te Betalen</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="bestelbonLijn : ${bestelbonLijnen}" th:object="${bestelbonLijn}">
+        <td th:text="*{bierNaam}"></td>
+        <td th:text="*{bierPrijs}"></td>
+        <td th:text="*{aantal}"></td>
+        <td th:text="*{prijs}"></td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td colspan="4" th:text="|Totaal: ${totaal}|"></td>
+    </tr>
+    </tfoot>
+</table>
+<form method="post" th:action="@{/mandje/bevestig}" th:object="${bestelBon}">
+    <label>Naam:<span th:errors="*{naam}"></span>
+        <input autofocus required th:field="*{naam}" type="text">
+    </label>
+    <label>Straat:<span th:errors="*{straat}"></span>
+        <input required th:field="*{straat}" type="text">
+    </label>
+    <label>Huisnummer:<span th:errors="*{huisnr}"></span>
+        <input required th:field="*{huisnr}" type="text">
+    </label>
+    <label>Postcode:<span th:errors="*{postcode}"></span>
+        <input max="9999" min="1000" required step="1" th:field="*{postcode}" type="number">
+    </label>
+    <label>Gemeente:<span th:errors="*{gemeente}"></span>
+        <input required th:field="*{gemeente}" type="text">
+    </label>
+    <input th:field="*{id}" type="hidden">
+    <button>Als bestelbon bevestigen</button>
+</form>
+</body>
+</html>
