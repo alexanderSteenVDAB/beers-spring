@@ -1,7 +1,12 @@
 /* Navigation */
+body, nav {
+    margin: 0
+}
+
 nav ul {
     background-color: #3e8e41;
     padding: 0.4em 0;
+    margin: 0;
 }
 
 nav li {
@@ -23,17 +28,18 @@ nav li a:hover {
 /* Lists */
 ul {
     margin-left: 0;
-    padding-left: 0;
+    padding-left: 0.5em;
 }
 
 li {
     list-style: none;
+    margin-top: 0.25em;
 }
 
 li a {
     color: black;
     padding-left: 0.5em;
-    text-decoration: none;
+    text-decoration: black;
 }
 
 dd, dt {
@@ -42,7 +48,25 @@ dd, dt {
 
 dt {
     margin-top: 0.5em;
+    margin-bottom: 0.25em;
     font-weight: bold;
+}
+
+table {
+    border: 1px solid black;
+    margin-left: 1em;
+}
+
+tr {
+    background-color: lightgreen;
+}
+
+tr:nth-child(even) {
+    background-color: lightyellow;
+}
+
+tr:nth-child(odd) {
+    background-color: sandybrown;
 }
 
 tfoot {
@@ -50,12 +74,41 @@ tfoot {
     text-align: right;
 }
 
+th, tfoot tr td {
+    background-color: green;
+    color: white;
+}
+
 label {
     display: block;
     margin-bottom: 0.5em;
+    font-weight: bold;
 }
 
 input {
     display: block;
     font-weight: bold;
+    padding-top: 0.25em;
+}
+
+button {
+    background-color: green;
+    color: white;
+    border: 0;
+    font-size: 1.3em;
+}
+
+/* heading, and text */
+img, h1, h2, p, dd, dt, form {
+    padding-left: 1em
+}
+
+h1 {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: green;
+}
+
+form {
+    margin-top: 2em;
 }

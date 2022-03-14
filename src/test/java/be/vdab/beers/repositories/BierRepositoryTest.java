@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
@@ -26,6 +28,10 @@ class BierRepositoryTest extends AbstractTransactionalJUnit4SpringContextTests {
 
     private long idVanTestBier() {
         return jdbcTemplate.queryForObject("select id from bieren where naam = 'test'", Long.class);
+    }
+
+    private long idVanTestBier2() {
+        return jdbcTemplate.queryForObject("select id from bieren where naam = 'test2'", Long.class);
     }
 
     @Test
@@ -70,6 +76,47 @@ class BierRepositoryTest extends AbstractTransactionalJUnit4SpringContextTests {
     @Test
     void findByIdForUpdateOnbestaandeId() {
         assertThat(repository.findByIdForUpdate(-1)).isEmpty();
+    }
+
+
+    @Test
+    void findByIds() {
+        long id1 = idVanTestBier();
+        long id2 = idVanTestBier2();
+        assertThat(repository.findByIds(Set.of(id1, id2)))
+                .extracting(Bier::getId)
+                .containsOnly(id1, id2)
+                .isSorted();
+    }
+
+    @Test
+    void findByIdsGeeftLegeVerzamelingBierenBijLegeVerzamelingIds() {
+        assertThat(repository.findByIds(Set.of())).isEmpty();
+    }
+
+    @Test
+    void findByIdsGeeftLegeVerzamelingBierenBijOnbestaandeIds() {
+        assertThat(repository.findByIds(Set.of(-1L))).isEmpty();
+    }
+
+    @Test
+    void findByIdsForUpdate() {
+        long id1 = idVanTestBier();
+        long id2 = idVanTestBier2();
+        assertThat(repository.findByIdsForUpdate(Set.of(id1, id2)))
+                .extracting(Bier::getId)
+                .containsOnly(id1, id2)
+                .isSorted();
+    }
+
+    @Test
+    void findByIdsForUpdateGeeftLegeVerzamelingBierenBijLegeVerzamelingIds() {
+        assertThat(repository.findByIdsForUpdate(Set.of())).isEmpty();
+    }
+
+    @Test
+    void findByIdsForUpdateGeeftLegeVerzamelingBierenBijOnbestaandeIds() {
+        assertThat(repository.findByIdsForUpdate(Set.of(-1L))).isEmpty();
     }
 
     @Test

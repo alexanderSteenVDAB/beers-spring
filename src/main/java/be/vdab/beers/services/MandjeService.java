@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -28,36 +27,33 @@ public class MandjeService {
         this.bestelBonLijnRepository = bestelBonLijnRepository;
     }
 
+
     public List<BestelBonLijn> findBestelBonLijnen() {
-        return mandje.getBesteldeArtikels().entrySet().stream()
-                .map(besteldeArtikels -> {
-                    if (bierService.findById(besteldeArtikels.getKey()).isEmpty()) {
-                        return null;
-                    }
-                    return new BestelBonLijn(bierService.findById(besteldeArtikels.getKey()).get(),
-                            besteldeArtikels.getValue());
-                })
-                .filter(Objects::nonNull)
+        var besteldeBieren = bierService.findByIds(mandje.getBesteldeArtikels().keySet());
+
+        return besteldeBieren.stream().map(
+                        bier -> new BestelBonLijn(bier, mandje.getBesteldeArtikels().get(bier.getId())))
                 .toList();
     }
 
-    public BigDecimal berekenTotaal() {
-        return findBestelBonLijnen().stream()
-                .map(BestelBonLijn::getPrijs)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    public List<BestelBonLijn> findBestelBonLijnenForUpdate() {
+        var besteldeBieren = bierService.findByIdsForUpdate(mandje.getBesteldeArtikels().keySet());
+
+        return besteldeBieren.stream().map(
+                        bier -> new BestelBonLijn(bier, mandje.getBesteldeArtikels().get(bier.getId())))
+                .toList();
     }
+
 
     @Transactional()
     public long bevestig(BestelBon bestelBon) {
         var id = bestelBonRepository.create(bestelBon);
 
-        findBestelBonLijnen().forEach(bestelBonLijn -> {
-            if (bierService.findByIdForUpdate(bestelBonLijn.getBierId()).isPresent()) {
-                bestelBonLijn.setBestelBonId(id);
-                bestelBonLijnRepository.create(bestelBonLijn);
-                bierService.verhoogAantal(bestelBonLijn.getBierId(), bestelBonLijn.getAantal());
-                mandje.verwijder(bestelBonLijn.getBierId());
-            }
+        findBestelBonLijnenForUpdate().forEach(bestelBonLijn -> {
+            bestelBonLijn.setBestelBonId(id);
+            bestelBonLijnRepository.create(bestelBonLijn);
+            bierService.verhoogAantal(bestelBonLijn.getBierId(), bestelBonLijn.getAantal());
+            mandje.verwijder(bestelBonLijn.getBierId());
         });
 
         return id;

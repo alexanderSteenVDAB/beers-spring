@@ -60,4 +60,15 @@ public class Bier {
         result = 31 * result + prijs.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Bier{" +
+                "id=" + id +
+                ", naam='" + naam + '\'' +
+                ", brouwerId=" + brouwerId +
+                ", alcohol=" + alcohol +
+                ", prijs=" + prijs +
+                '}';
+    }
 }

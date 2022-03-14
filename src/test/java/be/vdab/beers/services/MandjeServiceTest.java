@@ -14,8 +14,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -36,55 +37,62 @@ class MandjeServiceTest {
     void beforeEach() {
         service = new MandjeService(mandje, bierService, bestelBonRepository, bestelBonLijnRepository);
         when(mandje.getBesteldeArtikels())
-                .thenReturn(Map.of(1L, 10, 3L, 30, 2L, 20, 4L, 40));
-        when(bierService.findById(1L)).thenReturn(
-                Optional.of(new Bier(1L, "BBB", 1L, BigDecimal.TEN, BigDecimal.ONE)));
-        when(bierService.findById(2L)).thenReturn(
-                Optional.of(new Bier(2L, "CCC", 1L, BigDecimal.TEN, BigDecimal.ONE)));
-        when(bierService.findById(3L)).thenReturn(
-                Optional.of(new Bier(3L, "AAA", 1L, BigDecimal.TEN, BigDecimal.ONE)));
-        when(bierService.findById(4L)).thenReturn(Optional.empty());
+                .thenReturn(Map.of(1L, 10, 3L, 30, 2L, 20, 4L, 40)); // todo niet meer voor nulle testen
+
+
     }
 
     @AfterEach
     void afterEach() {
-        verify(mandje).getBesteldeArtikels();
-        verify(bierService, atLeastOnce()).findById(1L);
-        verify(bierService, atLeastOnce()).findById(2L);
-        verify(bierService, atLeastOnce()).findById(3L);
-        verify(bierService, atLeastOnce()).findById(4L);
+        verify(mandje, atLeastOnce()).getBesteldeArtikels();
     }
 
     @Test
     void findBestelBonLijnen() {
+        when(bierService.findByIds(Set.of(1L, 3L, 2L, 4L))).thenReturn(List.of(
+                new Bier(1L, "BBB", 1L, BigDecimal.TEN, BigDecimal.ONE),
+                new Bier(3L, "AAA", 1L, BigDecimal.TEN, BigDecimal.ONE),
+                new Bier(2L, "CCC", 1L, BigDecimal.TEN, BigDecimal.ONE)
+        ));
         var bestelBonLijnen = service.findBestelBonLijnen();
-        assertThat(bestelBonLijnen).contains(
+        assertThat(bestelBonLijnen).containsExactly(
                 new BestelBonLijn(new Bier(1L, "BBB", 1L, BigDecimal.TEN, BigDecimal.ONE), 10),
-                new BestelBonLijn(new Bier(2L, "CCC", 1L, BigDecimal.TEN, BigDecimal.ONE), 20),
-                new BestelBonLijn(new Bier(3L, "AAA", 1L, BigDecimal.TEN, BigDecimal.ONE), 30)
+                new BestelBonLijn(new Bier(3L, "AAA", 1L, BigDecimal.TEN, BigDecimal.ONE), 30),
+                new BestelBonLijn(new Bier(2L, "CCC", 1L, BigDecimal.TEN, BigDecimal.ONE), 20)
         );
+        verify(bierService).findByIds(Set.of(1L, 3L, 2L, 4L));
     }
 
-    @Test
-    void berekenTotaal() {
-        assertThat(service.berekenTotaal()).isEqualByComparingTo("60");
-    }
-
-    @Test
-    void bevestig() {
-    }
 
     @Test
     void bevestigGeetJuistIdTerug() {
+        when(bierService.findByIdsForUpdate(Set.of(1L, 3L, 2L, 4L))).thenReturn(List.of(
+                new Bier(1L, "BBB", 1L, BigDecimal.TEN, BigDecimal.ONE),
+                new Bier(3L, "AAA", 1L, BigDecimal.TEN, BigDecimal.ONE),
+                new Bier(2L, "CCC", 1L, BigDecimal.TEN, BigDecimal.ONE)
+        ));
+
         var bestelBon = new BestelBon(1L, "test", "test", "test", 7000, "test");
         when(bestelBonRepository.create(bestelBon)).thenReturn(1L);
+
         assertThat(service.bevestig(bestelBon)).isEqualTo(1L);
+
+        verify(bierService).findByIdsForUpdate(Set.of(1L, 3L, 2L, 4L));
+        verify(bestelBonRepository).create(bestelBon);
     }
 
 
     @Test
     void getBierNamen() {
+        when(bierService.findByIds(Set.of(1L, 3L, 2L, 4L))).thenReturn(List.of(
+                new Bier(1L, "BBB", 1L, BigDecimal.TEN, BigDecimal.ONE),
+                new Bier(3L, "AAA", 1L, BigDecimal.TEN, BigDecimal.ONE),
+                new Bier(2L, "CCC", 1L, BigDecimal.TEN, BigDecimal.ONE)
+        ));
+
         assertThat(service.getBierNamen()).contains("AAA", "BBB", "CCC").isSorted();
+
+        verify(bierService).findByIds(Set.of(1L, 3L, 2L, 4L));
     }
 
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class BierRepository {
@@ -51,6 +52,7 @@ public class BierRepository {
         }
     }
 
+
     public Optional<Bier> findByIdForUpdate(long id) {
         try {
             var sql = """
@@ -63,6 +65,30 @@ public class BierRepository {
         } catch (IncorrectResultSizeDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<Bier> findByIds(Set<Long> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        var sql = """
+                select id, naam, brouwerId, alcohol, prijs
+                from bieren
+                where id in (
+                """ + "?,".repeat(ids.size() - 1) + "?) order by id";
+        return template.query(sql, bierMapper, ids.toArray());
+    }
+
+    public List<Bier> findByIdsForUpdate(Set<Long> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        var sql = """
+                select id, naam, brouwerId, alcohol, prijs
+                from bieren
+                where id in (
+                """ + "?,".repeat(ids.size() - 1) + "?) order by id for update";
+        return template.query(sql, bierMapper, ids.toArray());
     }
 
     public void verhoogAantal(long id, int aantal) {

@@ -3,6 +3,7 @@
         <ul>
             <li><a th:href="@{/}">Welkom</a></li>
             <li><a th:href="@{/brouwer}">Brouwers</a></li>
+            <li th:if="${isMandjeGevuld}"><a th:href="@{/manje}">Mandje</a></li>
         </ul>
     </nav>
 

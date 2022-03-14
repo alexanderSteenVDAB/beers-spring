@@ -21,6 +21,10 @@ public class Mandje implements Serializable {
         }
     }
 
+    public boolean isMandjeGevuld() {
+        return !besteldeArtikels.isEmpty();
+    }
+
     public void verwijder(long id) {
         besteldeArtikels.remove(id);
     }

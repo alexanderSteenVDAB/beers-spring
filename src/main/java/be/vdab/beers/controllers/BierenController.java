@@ -33,7 +33,7 @@ public class BierenController {
     public ModelAndView bierById(@PathVariable long id) {
         var modelAndView = new ModelAndView("bier");
         service.findById(id).ifPresent(bier -> modelAndView.addObject(bier)
-                .addObject(new BestelBonLijnForm(bier.getId(), 1, bier.getPrijs())));
+                .addObject(new BestelBonLijnForm(bier.getId(), 1)));
         return modelAndView;
     }
 
@@ -42,7 +42,7 @@ public class BierenController {
         if (errors.hasErrors()) {
             var modelAndView = new ModelAndView("bier");
             service.findById(bestelBonLijnForm.getBierId()).ifPresent(bier -> modelAndView.addObject(bier)
-                    .addObject(new BestelBonLijnForm(bier.getId(), 1, bier.getPrijs())));
+                    .addObject(new BestelBonLijnForm(bier.getId(), 1)));
             return modelAndView;
         }
         mandje.voegToe(bestelBonLijnForm.getBierId(), bestelBonLijnForm.getAantal());

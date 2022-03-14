@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,6 +32,14 @@ public class BierService {
 
     public Optional<Bier> findByIdForUpdate(long bierId) {
         return repository.findByIdForUpdate(bierId);
+    }
+
+    public List<Bier> findByIds(Set<Long> ids) {
+        return repository.findByIds(ids);
+    }
+
+    public List<Bier> findByIdsForUpdate(Set<Long> ids) {
+        return repository.findByIdsForUpdate(ids);
     }
 
     public void verhoogAantal(long bierId, int aantal) {

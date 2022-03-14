@@ -7,8 +7,7 @@
 <img alt="Foto van bieren" th:src="@{/images/beers.jpg}">
 <p>We hebben momenteel
     <th:block th:text="${aantal}"></th:block>
-    bier
-    <th:block th:if="${aantal} != 1">en</th:block>
+    <th:block th:text="${aantal} != 1 ? 'bieren' : 'bier'">en</th:block>
 </p>
 </body>
 </html>
